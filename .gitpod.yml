@@ -9,8 +9,6 @@ tasks:
       sudo ./aws/install
       rm awscliv2.zip
       cd $THEIA_WORKSPACE_ROOT
-      export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      export AWS_ACCESS_ID=${AWS_ACCESS_ID}
 vscode:
   extensions:
     - 42Crunch.vscode-openapi     
