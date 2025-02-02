@@ -27,7 +27,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcess
 provider = TracerProvider()
 processor = BatchSpanProcessor(OTLPSpanExporter())
 provider.add_span_processor(processor)
-
+#show this in the logs within the backend flask app
 simle_processor = SimpleSpanProcessor(ConsoleSpanExporter())
 provider.add_span_processor(simle_processor)
 
