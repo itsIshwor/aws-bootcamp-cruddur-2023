@@ -18,15 +18,19 @@ from services.notifications_activities import *
 from opentelemetry import trace
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter,ConsoleSpanExporter
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor
 
 
 ## HONEYCOMB-OPEN TELEMETRY
 provider = TracerProvider()
 processor = BatchSpanProcessor(OTLPSpanExporter())
 provider.add_span_processor(processor)
+
+simle_processor = SimpleSpanProcessor(ConsoleSpanExporter())
+provider.add_span_processor(simle_processor)
+
 trace.set_tracer_provider(provider)
 tracer = trace.get_tracer(__name__)
 
