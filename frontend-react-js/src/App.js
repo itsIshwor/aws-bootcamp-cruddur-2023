@@ -2,6 +2,7 @@ import './App.css';
 
 import HomeFeedPage from './pages/HomeFeedPage';
 import UserFeedPage from './pages/UserFeedPage';
+import NotificationPage from './pages/NotificationPage';
 import SignupPage from './pages/SignupPage';
 import SigninPage from './pages/SigninPage';
 import RecoverPage from './pages/RecoverPage';
@@ -14,6 +15,7 @@ import {
   createBrowserRouter,
   RouterProvider
 } from "react-router-dom";
+import path from 'path';
 
 const router = createBrowserRouter([
   {
@@ -47,6 +49,10 @@ const router = createBrowserRouter([
   {
     path: "/forgot",
     element: <RecoverPage />
+  },
+  {
+    path: "/notifications",
+    element: <NotificationPage />
   }
 ]);
 
