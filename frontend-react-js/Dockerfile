@@ -1,9 +1,9 @@
-FROM node:16.18
-
-ENV PORT=3000
-
-COPY . /frontend-react-js
-WORKDIR /frontend-react-js
+FROM node:14
+WORKDIR /app
+COPY package*.json ./
 RUN npm install
-EXPOSE ${PORT}
+COPY . .
+
+EXPOSE 3000
+
 CMD ["npm", "start"]
