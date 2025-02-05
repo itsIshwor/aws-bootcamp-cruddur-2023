@@ -4,7 +4,7 @@ services:
     build: .
     ports:
       - "2000:2000/udp"
-    command: --local-mode
+    command: "xray -o -b xray-daemon:2000"
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -17,6 +17,7 @@ services:
       OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
       OTEL_SERVICE_NAME: "${HONEYCOMB_SERVICE_NAME}"
       AWS_XRAY_URL: "*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      AWS_XRAY_DAEMON_ADDRESS: xray-daemon:2000
     build: ./backend-flask
     ports:
       - "4567:4567"
