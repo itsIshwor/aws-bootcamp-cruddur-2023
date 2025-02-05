@@ -46,7 +46,7 @@ RequestsInstrumentor().instrument()
 
 # xray setup
 xray_url = os.getenv('AWS_XRAY_URL')
-xray_recorder.configure(service='backed-flask')
+xray_recorder.configure(service='backed-flask', dynamic_naming=xray_url)
 XRayMiddleware(app, xray_recorder)
 
 frontend = os.getenv('FRONTEND_URL')
