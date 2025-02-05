@@ -1,5 +1,5 @@
 {
-  "samplingRule": {
+  "SamplingRule": {
     "RuleName": "cuddr",
     "ResourceARN": "*",
     "Priority": 9999,
