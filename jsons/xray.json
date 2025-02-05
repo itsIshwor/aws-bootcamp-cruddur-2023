@@ -1,0 +1,15 @@
+{
+  "samplingRule": {
+    "RuleName": "cuddr",
+    "ResourceARN": "*",
+    "Priority": 9999,
+    "FixedRate": 0.01,
+    "ReservoirSize": 1,
+    "ServiceName": "backed-flask",
+    "ServiceType": "*",
+    "Host": "*",
+    "HTTPMethod": "*",
+    "URLPath": "*",
+    "Version": 1
+  }
+}

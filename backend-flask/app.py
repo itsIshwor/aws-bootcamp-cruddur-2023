@@ -23,6 +23,11 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor,ConsoleSpanExporter
 
 
+# x-ray setup
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+
+
 ## HONEYCOMB-OPEN TELEMETRY
 provider = TracerProvider()
 processor = BatchSpanProcessor(OTLPSpanExporter())
@@ -38,6 +43,12 @@ app = Flask(__name__)
 ## HONEYCOMB-OPEN TELEMETRY
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
+
+# xray setup
+xray_url = os.getenv('AWS_XRAY_URL')
+xray_recorder.configure(service='backed-flask')
+XRayMiddleware(app, xray_recorder)
+
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
 origins = [frontend, backend]
