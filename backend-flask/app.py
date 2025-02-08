@@ -165,5 +165,10 @@ def data_activities_reply(activity_uuid):
     return model['data'], 200
   return
 
+@app.after_request
+def log_request_info(response):
+    logger.info(f'Time: {request.date}, Schema: {request.scheme}, Method: {request.method}, Status: {response.status}, Address: {request.remote_addr}, Path: {request.path}')
+    return response
+
 if __name__ == "__main__":
   app.run(debug=True)
