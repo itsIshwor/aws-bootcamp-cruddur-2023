@@ -23,6 +23,10 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor,ConsoleSpanExporter
 
 
+# cloud watch setup:
+import watchtower, logging
+
+
 # x-ray setup
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
@@ -48,6 +52,13 @@ RequestsInstrumentor().instrument()
 xray_url = os.getenv('AWS_XRAY_URL')
 xray_recorder.configure(service='backed-flask', dynamic_naming=xray_url)
 XRayMiddleware(app, xray_recorder)
+
+# cloud watch setup
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.addHandler(watchtower.CloudWatchLogHandler())
+logger.info("Hi")
+logger.info(dict(foo="bar", details={}))
 
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
@@ -97,6 +108,7 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
+  logger.info('home activities')
   data = HomeActivities.run()
   return data, 200
 
