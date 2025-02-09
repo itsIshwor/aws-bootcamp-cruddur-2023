@@ -31,6 +31,11 @@ import watchtower, logging
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 
+#rollbar setup
+import rollbar
+import rollbar.contrib.flask
+from flask import got_request_exception
+
 
 ## HONEYCOMB-OPEN TELEMETRY
 provider = TracerProvider()
@@ -60,6 +65,27 @@ logger.addHandler(watchtower.CloudWatchLogHandler())
 logger.info("Hi")
 logger.info(dict(foo="bar", details={}))
 
+
+rollbar_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
+#rollbar setup
+with app.app_context():
+    """init rollbar module"""
+    rollbar.init(
+        # access token
+        rollbar_token,
+        # environment name - any string, like 'production' or 'development'
+        'flasktest',
+        # server root directory, makes tracebacks prettier
+        root=os.path.dirname(os.path.realpath(__file__)),
+        # flask already sets up logging
+        allow_logging_basic_config=False)
+
+    # send exceptions from `app` to rollbar, using flask's signal system.
+    got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+
+
+
+
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
 origins = [frontend, backend]
@@ -70,6 +96,12 @@ cors = CORS(
   allow_headers="content-type,if-modified-since",
   methods="OPTIONS,GET,HEAD,POST"
 )
+
+@app.route("/api/rollbar", methods=['GET'])
+def data_rollbar():
+  logger.info('rollbar')
+  rollbar.report_message('Hello, world!', 'warning')
+  return 'rollbar', 200
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
