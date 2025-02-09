@@ -14,7 +14,80 @@ from services.create_message import *
 from services.show_activity import *
 from services.notifications_activities import *
 
+
 app = Flask(__name__)
+## HONEYCOMB-OPEN TELEMETRY
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor,ConsoleSpanExporter
+
+
+# cloud watch setup:
+import watchtower, logging
+
+
+# x-ray setup
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+
+#rollbar setup
+import rollbar
+import rollbar.contrib.flask
+from flask import got_request_exception
+
+
+## HONEYCOMB-OPEN TELEMETRY
+# provider = TracerProvider()
+# processor = BatchSpanProcessor(OTLPSpanExporter())
+# provider.add_span_processor(processor)
+#show this in the logs within the backend flask app
+# simle_processor = SimpleSpanProcessor(ConsoleSpanExporter())
+# provider.add_span_processor(simle_processor)
+
+# trace.set_tracer_provider(provider)
+# tracer = trace.get_tracer(__name__)
+
+app = Flask(__name__)
+## HONEYCOMB-OPEN TELEMETRY
+# FlaskInstrumentor().instrument_app(app)
+# RequestsInstrumentor().instrument()
+
+# xray setup
+# xray_url = os.getenv('AWS_XRAY_URL')
+# xray_recorder.configure(service='backed-flask', dynamic_naming=xray_url)
+# XRayMiddleware(app, xray_recorder)
+
+# cloud watch setup
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
+# logger.addHandler(watchtower.CloudWatchLogHandler())
+# logger.info("Hi")
+# logger.info(dict(foo="bar", details={}))
+
+
+rollbar_token =None # os.getenv('ROLLBAR_ACCESS_TOKEN')
+#rollbar setup
+with app.app_context():
+    """init rollbar module"""
+    rollbar.init(
+        # access token
+        rollbar_token,
+        # environment name - any string, like 'production' or 'development'
+        'flasktest',
+        # server root directory, makes tracebacks prettier
+        root=os.path.dirname(os.path.realpath(__file__)),
+        # flask already sets up logging
+        allow_logging_basic_config=False)
+
+    # send exceptions from `app` to rollbar, using flask's signal system.
+    got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+
+
+
+
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
 origins = [frontend, backend]
@@ -25,6 +98,12 @@ cors = CORS(
   allow_headers="content-type,if-modified-since",
   methods="OPTIONS,GET,HEAD,POST"
 )
+
+@app.route("/api/rollbar", methods=['GET'])
+def data_rollbar():
+  logger.info('rollbar')
+  rollbar.report_message('Hello, world!', 'warning')
+  return 'rollbar', 200
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
