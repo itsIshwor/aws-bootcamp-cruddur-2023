@@ -14,7 +14,7 @@ from services.create_message import *
 from services.show_activity import *
 from services.notifications_activities import *
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
 
 app = Flask(__name__)
 ## HONEYCOMB-OPEN TELEMETRY
@@ -157,7 +157,7 @@ cors = CORS(
 
 @app.route("/api/rollbar", methods=['GET'])
 def data_rollbar():
-  logger.info('rollbar')
+  #logger.info('rollbar')
   rollbar.report_message('Hello, world!', 'warning')
   return 'rollbar', 200
 
@@ -198,7 +198,7 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-  logger.info('home activities')
+  #logger.info('home activities')
   data = HomeActivities.run()
   return data, 200
 
@@ -257,7 +257,7 @@ def data_activities_reply(activity_uuid):
 
 @app.after_request
 def log_request_info(response):
-    logger.info(f'Time: {request.date}, Schema: {request.scheme}, Method: {request.method}, Status: {response.status}, Address: {request.remote_addr}, Path: {request.path}')
+    #logger.info(f'Time: {request.date}, Schema: {request.scheme}, Method: {request.method}, Status: {response.status}, Address: {request.remote_addr}, Path: {request.path}')
     return response
 
 if __name__ == "__main__":
