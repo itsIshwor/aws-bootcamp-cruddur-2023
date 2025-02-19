@@ -14,6 +14,7 @@ from services.create_message import *
 from services.show_activity import *
 from services.notifications_activities import *
 
+<<<<<<< HEAD
 
 app = Flask(__name__)
 ## HONEYCOMB-OPEN TELEMETRY
@@ -69,6 +70,61 @@ app = Flask(__name__)
 
 
 rollbar_token =None # os.getenv('ROLLBAR_ACCESS_TOKEN')
+# =======
+# ## HONEYCOMB-OPEN TELEMETRY
+# from opentelemetry import trace
+# from opentelemetry.instrumentation.flask import FlaskInstrumentor
+# from opentelemetry.instrumentation.requests import RequestsInstrumentor
+# from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+# from opentelemetry.sdk.trace import TracerProvider
+# from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor,ConsoleSpanExporter
+
+
+# # cloud watch setup:
+# import watchtower, logging
+
+
+# # x-ray setup
+# from aws_xray_sdk.core import xray_recorder
+# from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+
+# #rollbar setup
+# import rollbar
+# import rollbar.contrib.flask
+# from flask import got_request_exception
+
+
+# ## HONEYCOMB-OPEN TELEMETRY
+# provider = TracerProvider()
+# processor = BatchSpanProcessor(OTLPSpanExporter())
+# provider.add_span_processor(processor)
+# #show this in the logs within the backend flask app
+# simle_processor = SimpleSpanProcessor(ConsoleSpanExporter())
+# provider.add_span_processor(simle_processor)
+
+# trace.set_tracer_provider(provider)
+# tracer = trace.get_tracer(__name__)
+
+# app = Flask(__name__)
+# ## HONEYCOMB-OPEN TELEMETRY
+# FlaskInstrumentor().instrument_app(app)
+# RequestsInstrumentor().instrument()
+
+# # xray setup
+# xray_url = os.getenv('AWS_XRAY_URL')
+# xray_recorder.configure(service='backed-flask', dynamic_naming=xray_url)
+# XRayMiddleware(app, xray_recorder)
+
+# # cloud watch setup
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
+# logger.addHandler(watchtower.CloudWatchLogHandler())
+# logger.info("Hi")
+# logger.info(dict(foo="bar", details={}))
+
+
+# rollbar_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
+# >>>>>>> week-2-1
 #rollbar setup
 with app.app_context():
     """init rollbar module"""
@@ -142,6 +198,7 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
+  logger.info('home activities')
   data = HomeActivities.run()
   return data, 200
 
@@ -197,6 +254,11 @@ def data_activities_reply(activity_uuid):
   else:
     return model['data'], 200
   return
+
+@app.after_request
+def log_request_info(response):
+    logger.info(f'Time: {request.date}, Schema: {request.scheme}, Method: {request.method}, Status: {response.status}, Address: {request.remote_addr}, Path: {request.path}')
+    return response
 
 if __name__ == "__main__":
   app.run(debug=True)
